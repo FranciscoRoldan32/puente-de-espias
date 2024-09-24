@@ -3,7 +3,6 @@ package interfaz;
 import java.util.Scanner;
 import grafo.Graph;
 
-
 import javax.swing.*;
 
 import org.openstreetmap.gui.jmapviewer.Coordinate;
@@ -12,28 +11,26 @@ import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 public class Interfaz extends JFrame {
 	
-	 private int positionPanelX;
-	    private int postionPanelY;
-
-	    private int width = 900; // Aumenta el tamaño del ancho de la ventana
-	    private int height = 600; // Aumenta el tamaño de la ventana
+	 	private int positionPanelX, postionPanelY;
+	 	private Archivo arch;
+	    private int width = 900; //ancho
+	    private int height = 600; //largo
 
 	    private JMapViewer mapViewer;
 	    private JPanel panelMap;
-	    
-	    private JTextField textCantidadVertices;
 	    private JTextArea textAreaVertices;
 	    private String[] vertices;
 
 	    private Coordinate argentina;
 
 	    public Interfaz() {
-
 	        setTitle("Puente de Espias");
 	        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	        setBounds(100, 100, width, height); // Actualiza el tamaño de la ventana
@@ -41,19 +38,22 @@ public class Interfaz extends JFrame {
 
 	        // Etiqueta para cantidad de vértices
 	        JLabel lblCantidad = new JLabel("Cantidad de Espias en el Area:");
-	        lblCantidad.setBounds(10, 10, 150, 20);
+	        lblCantidad.setBounds(10, 10, 179, 20);
 	        getContentPane().add(lblCantidad);
-
-	        // Campo de texto para cantidad de vértices
-	        textCantidadVertices = new JTextField();
-	        textCantidadVertices.setBounds(170, 10, 50, 20);
-	        getContentPane().add(textCantidadVertices);
-	        textCantidadVertices.setColumns(10);
-
+	        
+	        /*
 	        // Botón para confirmar cantidad de vértices
 	        JButton btnIngresarVertices = new JButton("Confirmar cantidad");
-	        btnIngresarVertices.setBounds(230, 10, 150, 20);
+	        btnIngresarVertices.setBounds(259, 10, 150, 20);
 	        getContentPane().add(btnIngresarVertices);
+	        btnIngresarVertices.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	                int cantidadVertices = Integer.parseInt(lblCantidadVertices.getText());
+	                JOptionPane.showMessageDialog(null,
+	                        "Se han introducido " + cantidadVertices + " Espias");
+	            }
+	        });
+	        */
 
 	        // Área de texto para ingresar los nombres de los vértices
 	        textAreaVertices = new JTextArea();
@@ -62,25 +62,80 @@ public class Interfaz extends JFrame {
 	        JScrollPane scrollPane = new JScrollPane(textAreaVertices);
 	        scrollPane.setBounds(10, 50, 400, 100); // Añadimos un scroll en caso de texto largo
 	        getContentPane().add(scrollPane);
+	        
+
+	        JLabel lblCantidadVertices = new JLabel("0");
+	        lblCantidadVertices.setBounds(215, 10, 34, 20);
+	        getContentPane().add(lblCantidadVertices);
+	        
+	        JLabel lblAclaracion = new JLabel("Escribirlos separados por coma (tambien vale para el archivo.txt)");
+	        scrollPane.setColumnHeaderView(lblAclaracion);
 
 	        // Botón para procesar los nombres de los vértices
 	        JButton btnProcesarVertices = new JButton("Procesar Espias");
-	        btnProcesarVertices.setBounds(10, 160, 150, 20);
+	        btnProcesarVertices.setBounds(10, 161, 150, 20);
 	        getContentPane().add(btnProcesarVertices);
-
-	        // Acción del botón para ingresar la cantidad de vértices
-	        btnIngresarVertices.addActionListener(new ActionListener() {
-	            public void actionPerformed(ActionEvent e) {
-	                int cantidadVertices = Integer.parseInt(textCantidadVertices.getText());
-	                JOptionPane.showMessageDialog(null,
-	                        "Introduce los nombres de los " + cantidadVertices + " Espias, separados por comas.");
+	        
+	        JButton btnIngresarArchivo = new JButton("Subir archivo.txt");
+	        btnIngresarArchivo.addActionListener(new ActionListener() {
+	        	public void actionPerformed(ActionEvent e) {
+	        		JOptionPane.showMessageDialog(null,"Los nombres deben ir separados por comas.");
+	        		JFileChooser fileChooser = new JFileChooser();
+	                fileChooser.setDialogTitle("Selecciona un archivo .txt");
+	                int result = fileChooser.showOpenDialog(null);
+	                
+	                if (result == JFileChooser.APPROVE_OPTION) {
+	                    File selectedFile = fileChooser.getSelectedFile();
+	                    JOptionPane.showMessageDialog(null, "Has seleccionado: " + selectedFile.getName());
+	                    
+	                    // Mandar el archivo a la clase que lo procesa y obtener el arreglo de nombres
+	                    arch= new Archivo();
+	                    vertices = arch.leerArchivo(selectedFile.toString());   
+	                    // Mostrar los nombres en una ventana de diálogo
+	                    if (vertices != null) {
+	                        JOptionPane.showMessageDialog(null, "Nombres de los vértices: " + String.join(", ", vertices));
+	                        lblCantidadVertices.setText(String.valueOf(vertices.length));
+	                        String nombres = String.join(", ", vertices);
+	                        textAreaVertices.setText(nombres);
+	                        
+	                        JOptionPane.showMessageDialog(null, "Nombres de los vértices: " + nombres);
+	                    } else {
+	                        JOptionPane.showMessageDialog(null, "El archivo está vacío o hubo un error al procesarlo.");
+	                    }
+	                }
 	            }
 	        });
+	        btnIngresarArchivo.setBounds(259, 161, 150, 20);
+	        getContentPane().add(btnIngresarArchivo);
+	        
+	        JButton btnRestart = new JButton("");
+	        btnRestart.setBackground(new Color(255, 255, 255));
+	        ImageIcon imageIcon = new ImageIcon(getClass().getResource("/img/narrow_res.PNG")); // Ruta de la imagen
+	        Image image = imageIcon.getImage();
+	        Image scaledImage = image.getScaledInstance(42, 31, Image.SCALE_SMOOTH);
+	        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+	        btnRestart.setIcon(scaledIcon);
+	        btnRestart.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					vertices=null;
+					textAreaVertices.setText("");
+					lblCantidadVertices.setText("");
+					if (panelMap != null && panelMap.isVisible()) {
+						getContentPane().remove(panelMap); // Elimina el panel del mapa
+						panelMap = null; // Lo establece como null para poder regenerarlo si es necesario
+						revalidate(); // Refresca el contenedor para aplicar los cambios
+						repaint(); // Vuelve a pintar la ventana
+					}
+				}
+	        });
+	        btnRestart.setBounds(10, 192, 42, 31);
+	        getContentPane().add(btnRestart);
 
-	        // Acción del botón para procesar los nombres
 	        btnProcesarVertices.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
 	                procesarVertices();
+	                lblCantidadVertices.setText(String.valueOf(vertices.length));
 	            }
 	        });
 	    }
@@ -88,15 +143,9 @@ public class Interfaz extends JFrame {
 	    // Procesa los nombres de los vértices ingresados
 	    private void procesarVertices() {
 	        String nombres = textAreaVertices.getText();
-	        vertices = nombres.split(","); // Puedes cambiar el delimitador si prefieres otro
+	        vertices = nombres.split(","); 
 
-	        // Verificar si la cantidad de nombres coincide con la cantidad de vértices
-	        int cantidadVertices = Integer.parseInt(textCantidadVertices.getText());
-	        if (vertices.length != cantidadVertices) {
-	            JOptionPane.showMessageDialog(null, "El número de nombres no coincide con la cantidad de Espias.");
-	        } else {
-	            // Mostrar los nombres procesados (puedes añadir más funcionalidad aquí)
-	            StringBuilder result = new StringBuilder("Espias ingresados:\n");
+	        StringBuilder result = new StringBuilder("Espias ingresados:\n");
 	            for (String vertice : vertices) {
 	                result.append(vertice.trim()).append("\n"); // Eliminar espacios en blanco
 	            }
@@ -104,7 +153,6 @@ public class Interfaz extends JFrame {
 	            
 	            // Mostrar el mapa después de confirmar los vértices
 	            generatedMapPanel();
-	        }
 	    }
 	    
 	    
@@ -136,18 +184,5 @@ public class Interfaz extends JFrame {
 	        // Coordenadas de Argentina
 	        argentina = new Coordinate(-40.2, -63.616);
 	        mapViewer.setDisplayPosition(argentina, 5);
-	    }
-
-	    public static void main(String[] args) {
-	        SwingUtilities.invokeLater(new Runnable() {
-	            public void run() {
-	                try {
-	                    Interfaz frame = new Interfaz();
-	                    frame.setVisible(true);
-	                } catch (Exception e) {
-	                    e.printStackTrace();
-	                }
-	            }
-	        });
 	    }
 }
