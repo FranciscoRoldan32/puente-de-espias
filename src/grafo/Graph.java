@@ -23,7 +23,7 @@ public class Graph {
                 throw new IllegalArgumentException("Vertex with label '" + label + "' already exists");
             }
         }
-        Vertex vertex = new Vertex(label, numVertices);
+        Vertex vertex = new Vertex(label);
         vertices.add(vertex);
         adjacencyList.put(vertex, new ArrayList<>());
         numVertices++;
