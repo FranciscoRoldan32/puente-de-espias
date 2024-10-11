@@ -18,6 +18,7 @@ import javax.swing.*;
 
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
+import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
 import org.openstreetmap.gui.jmapviewer.MapPolygonImpl;
 
 
@@ -332,7 +333,7 @@ public class Interfaz extends JFrame {
         aristas.add(arista);
 
         // Dibujar la arista en el mapa
-        dibujarAristaEnMapa(new Vertex(espiaOrigen), new Vertex(espiaDestino));
+        dibujarAristaEnMapa(new Vertex(espiaOrigen), new Vertex(espiaDestino),peso);
     }
 
     private void generatedMapPanel() {
@@ -446,10 +447,10 @@ public class Interfaz extends JFrame {
 	    aristas.add(arista);
 
 	    // Dibujar la arista en el mapa
-	    dibujarAristaEnMapa(espiaOrigen, espiaDestino);
+	    dibujarAristaEnMapa(espiaOrigen, espiaDestino,peso);
 	}
-	private void dibujarAristaEnMapa(Vertex espiaOrigen, Vertex espiaDestino) {
-	    // Obtener las coordenadas de los espías
+	private void dibujarAristaEnMapa(Vertex espiaOrigen, Vertex espiaDestino,int peso) {
+		 // Obtener las coordenadas de los espías
 	    Coordinate coordOrigen = obtenerCoordenadaEspia(espiaOrigen);
 	    Coordinate coordDestino = obtenerCoordenadaEspia(espiaDestino);
 
@@ -460,6 +461,19 @@ public class Interfaz extends JFrame {
 	        ruta.add(coordDestino);
 	        MapPolygonImpl linea = new MapPolygonImpl(ruta);
 	        mapViewer.addMapPolygon(linea);
+
+	        // Calcular el punto medio entre las dos coordenadas para colocar la etiqueta del peso
+	        double latitudMedia = (coordOrigen.getLat() + coordDestino.getLat()) / 2;
+	        double longitudMedia = (coordOrigen.getLon() + coordDestino.getLon()) / 2;
+	        Coordinate puntoMedio = new Coordinate(latitudMedia, longitudMedia);
+
+	        // Crear un marcador para el peso y añadirlo al mapa
+	        String textoPeso = Integer.toString(peso);
+	        MapMarkerDot marcadorPeso = new MapMarkerDot(textoPeso, puntoMedio);
+	        marcadorPeso.setBackColor(Color.RED);  // Color del marcador para el peso
+	        mapViewer.addMapMarker(marcadorPeso);  // Añadir el marcador con el peso al mapa
+
+	        // Re-dibujar el mapa para mostrar los cambios
 	        mapViewer.repaint();
 	    }
 	}
