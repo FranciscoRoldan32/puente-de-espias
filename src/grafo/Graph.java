@@ -37,7 +37,7 @@ public class Graph {
 
         for (Edge edge : adjacencyList.get(source)) {
             if (edge.getDest().equals(destination)) {
-                // Edge already exists, no need to add it again
+                
                 throw new IllegalArgumentException("Este Arista ya fue agregado al gráfico.");
             }
         }
@@ -49,7 +49,7 @@ public class Graph {
         if (!vertices.contains(source) || !vertices.contains(destination)) {
             throw new IllegalArgumentException("El vertice de origen o destino no existe en el gráfico");
         }
-        //Todo listo y se agrega el grafo
+        
         adjacencyList.get(source).add(new Edge(source,destination, weight));
     }
 
@@ -138,6 +138,7 @@ public class Graph {
 
         return representation;
     }
+   
 
 
     //Esto imprime el grafo de una manera ordenada, solo muestra los vertice con edges, si uno quedo solo no se imprime

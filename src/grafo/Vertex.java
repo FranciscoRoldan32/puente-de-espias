@@ -25,6 +25,6 @@ public class Vertex {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Vertex vertex = (Vertex) obj;
-        return index == vertex.index;
+        return label.equals(vertex.label);
     }
 }

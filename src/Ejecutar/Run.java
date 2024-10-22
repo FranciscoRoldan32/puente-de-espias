@@ -1,14 +1,20 @@
 package Ejecutar;
-import interfaz.Interfaz;
+import controller.Controller;
+import grafo.Graph;
+import interfaz.Interfaz_Principal;
+import logica.MinimumGeneratingTree;
+
 public class Run {
 	public static void main(String[] args) {
-		// Para que la interfaz gráfica se ejecute en el hilo de eventos de Swing
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				// Crear una instancia de la clase Interfaz y hacerla visible
-				Interfaz ventana = new Interfaz();
-				ventana.setVisible(true); // Mostrar la ventana
-			}
-		});
+
+		// Crear una instancia de la clase Interfaz y hacerla visible
+		Interfaz_Principal ventana = new Interfaz_Principal();
+		Graph graph = new Graph();
+		MinimumGeneratingTree Kruskal = new MinimumGeneratingTree();
+		@SuppressWarnings("unused")
+		Controller controller = new Controller(ventana,ventana.getDesigningRegions(), graph, Kruskal);
+
 	}
+
 }
+
