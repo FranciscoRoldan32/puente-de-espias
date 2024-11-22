@@ -35,7 +35,7 @@ public class MinimumGeneratingTree {
         for (List<Edge> aristas : graphOriginal.getAdjacencyList().values()) {
             sortedEdges.addAll(aristas);
         }
-        Collections.sort(sortedEdges, Comparator.comparingInt(Edge::getWeight));
+        Collections.sort(sortedEdges, Comparator.comparingDouble(Edge::getWeight));
         int numEdges = 0;
         
        //Inicializar conjunto disjunto para detección de ciclo

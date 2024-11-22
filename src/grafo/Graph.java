@@ -30,7 +30,7 @@ public class Graph {
         return vertex;
     }
 
-    public void addEdge(Vertex source, Vertex destination, Integer weight) {
+    public void addEdge(Vertex source, Vertex destination, double weight) {
         if(weight <= 0){
             throw new IllegalArgumentException("La gráfica no puede ser igual o inferior a 0");
         }

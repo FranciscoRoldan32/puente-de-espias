@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 
-import grafo.Edge;
+
 import lugar.Coordinates;
 
 
@@ -19,6 +19,8 @@ import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
 import org.openstreetmap.gui.jmapviewer.MapPolygonImpl;
 import org.openstreetmap.gui.jmapviewer.interfaces.ICoordinate;
+
+import grafo.Vertex;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -60,9 +62,9 @@ public class Interfaz extends JPanel {
     private JButton bottonAddSpyConnectionGraph;
     private JButton bottonKruskal;
    
-    private JPanel panelCheckBox;
+    private JPanel panelBox;
     private JPanel panelConectionEdges;
-    private static List<JCheckBox> checkBoxList;
+    
     private List<String> vertexList = new ArrayList<>();
     private JPanel panelBottons;
     private JTextArea textAreaVertices;
@@ -73,11 +75,13 @@ public class Interfaz extends JPanel {
     private JButton bottonAddEspia, buttonBestLines ;
     private Panel panelDivideSpies;
     
+    private MouseAdapter mouseListener;
+    
     private String rutaImg2="/img/espiaIcono.png",rutaImg1="/img/narrow_res.PNG";
     
  	private Archivo arch;
  	
- 	private List<JComboBox<String>> listComboBoxProvince;
+ 	private List<JComboBox<String>> listComboBoxSpy;
     private List<JComboBox<Integer>> listComboBoxWeight;
     private JComboBox<Integer> comboBoxDivideSpies;
      
@@ -117,7 +121,7 @@ public class Interfaz extends JPanel {
 
         generatedPanel();
         generatedTitle();
-        generatedSpyCheckBox(); 
+        generatedSpyBox(); 
 
     }
     
@@ -152,7 +156,7 @@ public class Interfaz extends JPanel {
         argentina = new Coordinate(-40.2, -63.616);
         mapViewer.setDisplayPosition(argentina, 5);
 
-        // Agregar MouseListener al mapViewer para capturar los clics
+   
         mapViewer.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 Coordinate clickCoordinate = (Coordinate) mapViewer.getPosition(e.getPoint());
@@ -176,23 +180,23 @@ public class Interfaz extends JPanel {
     }
     
 
-    private void generatedSpyCheckBox() {
-        panelCheckBox = new JPanel();
-        panelCheckBox.setBounds(0, 60, 400, 300);
-        panelCheckBox.setLayout(new BorderLayout());
+    private void generatedSpyBox() {
+        panelBox = new JPanel();
+        panelBox.setBounds(0, 60, 400, 300);
+        panelBox.setLayout(new BorderLayout());
         
         JLabel labelInstructions = new JLabel("Ingrese los nombres de los vértices separados por comas:");
-        panelCheckBox.add(labelInstructions, BorderLayout.NORTH);
+        panelBox.add(labelInstructions, BorderLayout.NORTH);
         
         textAreaVertices = new JTextArea();
-        panelCheckBox.add(new JScrollPane(textAreaVertices), BorderLayout.CENTER);
+        panelBox.add(new JScrollPane(textAreaVertices), BorderLayout.CENTER);
 
         bottonAddEspia = new JButton("Agregar Espías al Mapa");
-        panelCheckBox.add(bottonAddEspia, BorderLayout.SOUTH);
+        panelBox.add(bottonAddEspia, BorderLayout.SOUTH);
 
-        panelElementsLeft.add(panelCheckBox);
+        panelElementsLeft.add(panelBox);
         
-        // Agregar acción al botón para generar los espías en el mapa
+       
         bottonAddEspia.addActionListener(e -> addVerticesFromTextArea());
     }
     
@@ -224,56 +228,46 @@ public class Interfaz extends JPanel {
     public void generSpyEdge(List<String> selectSpy){
         usedListForSpyEdges(selectSpy);
     }
+    
     private void usedListForSpyEdges(List<String> selectSpy){
-        panelConectionEdges = new JPanel();
-        panelConectionEdges.setBounds(0,365,400,528);
-        panelElementsLeft.add(panelConectionEdges);
-        panelConectionEdges.setLayout(null); 
+    	    panelConectionEdges = new JPanel();
+    	    panelConectionEdges.setBounds(0, 365, 400, 528);
+    	    panelElementsLeft.add(panelConectionEdges);
+    	    panelConectionEdges.setLayout(null);
 
-        //Esto para que la position del panel quede bien
+    	    int positonX = 0;
 
-        int positonX = 0;
+    	    listComboBoxSpy = new ArrayList<>();
+    	    listComboBoxWeight = new ArrayList<>();
 
-        listComboBoxProvince = new ArrayList<>();
-        listComboBoxWeight = new ArrayList<>();
+			for (String nameSpy : selectSpy) {
+					JPanel rowPanel = new JPanel(new GridLayout(1, 1));
+					rowPanel.setBounds(0, positonX, 400, 20);
+					rowPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-        for (String nameSpy : selectSpy) {
-            double latitude = espias.get(nameSpy).getLatitude();
-            double longitude = espias.get(nameSpy).getLongitude();
+					positonX += 22;
 
-            MapMarkerDot marker = new MapMarkerDot(nameSpy, new Coordinate(latitude, longitude));
+					JLabel label = new JLabel(nameSpy);
+					rowPanel.add(label);
 
-            marker.getStyle().setBackColor(Color.RED);
-            marker.getStyle().setColor(Color.BLUE);
+					// Crea ComboBox para seleccionar otros espías y los pesos de conexión
+					JComboBox<String> comboBox1 = new JComboBox<>(createComboBoxSpy(selectSpy, nameSpy));
+					rowPanel.add(comboBox1);
 
-            mapViewer.addMapMarker(marker);
-            JPanel rowPanel = new JPanel(new GridLayout(1, 1));
-            rowPanel.setBounds(0,positonX,400,20);
-            rowPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+					JComboBox<Integer> comboBox2 = new JComboBox<>(createComboBoxModel(10));
+					rowPanel.add(comboBox2);
 
-            positonX = positonX + 22;
-            JLabel label = new JLabel(nameSpy);
-            rowPanel.add(label);
-        
-            JComboBox<String> comboBox1 = new JComboBox<>(createComboBoxSpy(selectSpy, nameSpy));
-            rowPanel.add(comboBox1);
-        
-            JComboBox<Integer> comboBox2 = new JComboBox<>(createComboBoxModel(10)); 
-            rowPanel.add(comboBox2); 
-            
+					listComboBoxSpy.add(comboBox1);
+					listComboBoxWeight.add(comboBox2);
 
-            listComboBoxProvince.add(comboBox1);
-            listComboBoxWeight.add(comboBox2);
+					panelConectionEdges.add(rowPanel);
+				
 
-            panelConectionEdges.add(rowPanel);
-            
-        }
-        generatedBottonsGraph();
-        panelConectionEdges.revalidate();
-        panelConectionEdges.repaint();
-
-        panelElementsLeft.revalidate();
-        panelElementsLeft.repaint();
+					generatedBottonsGraph();
+					System.out.println("sss");
+					revalidate();
+					repaint();
+				}
 
     }
     
@@ -290,7 +284,7 @@ public class Interfaz extends JPanel {
     
     private DefaultComboBoxModel<Integer> createComboBoxModel(int limited) {
         DefaultComboBoxModel<Integer> model = new DefaultComboBoxModel<>();
-        for (int i = 1; i <= limited; i++) {
+        for (int i = 1 ; i <= limited; i++) {
             model.addElement(i);
         }
         return model;
@@ -308,8 +302,10 @@ public class Interfaz extends JPanel {
         }
         return model;
     }
+   
     
     private void generatedBottonsGraph() {
+    	
         panelBottons = new JPanel();
         panelBottons.setBounds(0,900,400,40);
         panelElementsLeft.add(panelBottons);
@@ -318,25 +314,25 @@ public class Interfaz extends JPanel {
         panelBottons.add(bottonAddSpyConnectionGraph);
 
         bottonKruskal = new JButton("Ejecutar algoritmo");
-        bottonKruskal.setEnabled(false);
+//        bottonKruskal.setEnabled(false);
         panelBottons.add(bottonKruskal);
-
     }
     
     public void removeCheckBoxElements(){
-        panelCheckBox.removeAll();
+        panelBox.removeAll();
         revalidate();
         repaint();
     }
+    
     public void createCheckboxDivideCountry(int limited){
 
-        panelCheckBox.setLayout(null); 
-        panelCheckBox.setBounds(0,60,400,300);
+        panelBox.setLayout(null); 
+        panelBox.setBounds(0,60,400,300);
 
 
         panelDivideSpies = new Panel();
         panelDivideSpies.setBounds(0,10,400,70);
-        panelCheckBox.add(panelDivideSpies);
+        panelBox.add(panelDivideSpies);
 
         JLabel headerLabel = new JLabel("¿En cuantas regiones queres separar el pais? ");
         panelDivideSpies.add(headerLabel);
@@ -349,12 +345,8 @@ public class Interfaz extends JPanel {
 
         buttonBestLines = new JButton("Generar el grafo y texto");
         panelDivideSpies.add(buttonBestLines);
-
-        
-
     }
-
-
+    
     public void removePreviewsMappolygons(){
         mapViewer.removeAllMapPolygons();
         mapViewer.revalidate();
@@ -438,7 +430,7 @@ public class Interfaz extends JPanel {
         panelConectionEdges.revalidate(); // RRevalidamos los componetes para que se vean
         panelConectionEdges.repaint(); // Repintamos del panel para que se vea
     }
-    public void agregarMarcadorMapa(Coordinates coordenadas, String nombreEspia) {
+    public void agregarMarcadorMapa(String nombreEspia, Coordinates coordenadas) {
         if (coordenadas != null) {
             MapMarkerDot marcador = new MapMarkerDot(coordenadas.getLatitude(), coordenadas.getLongitude());
             marcador.setBackColor(Color.RED);
@@ -450,13 +442,15 @@ public class Interfaz extends JPanel {
         }
     }
     
+
+    
    
     public JButton getBottonAddSpy() {
         return bottonAddEspia;
     }
 
-    public List<JComboBox<String>> getListComboBoxProvince() {
-        return listComboBoxProvince;
+    public List<JComboBox<String>> getListComboBoxSpy() {
+        return listComboBoxSpy;
     }
 
     public List<JComboBox<Integer>> getListComboBoxWeight() {
@@ -475,11 +469,11 @@ public class Interfaz extends JPanel {
         return espias;
     }
 
-    public JButton getBottonDivideCountry() {
+    public JButton getBottonBestLines() {
         return buttonBestLines;
     }
 
-    public JComboBox<Integer> getComboBoxDivideCountry() {
+    public JComboBox<Integer> getComboBoxDivideSpiesy() {
         return comboBoxDivideSpies;
     }
     public JTextArea getTextAreaVertices() {

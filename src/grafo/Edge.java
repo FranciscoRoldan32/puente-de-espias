@@ -5,9 +5,9 @@ import java.util.Objects;
 public class Edge {
     private Vertex src;
     private Vertex dest;
-    private Integer weight;
+    private double weight;
 
-    public Edge(Vertex source,Vertex destination, int weight) {
+    public Edge(Vertex source,Vertex destination, double weight) {
         this.src = source;
         this.dest = destination;
         this.weight = weight;
@@ -21,7 +21,7 @@ public class Edge {
         return dest;
     }
 
-    public int getWeight() {
+    public double getWeight() {
         return weight;
     }
 

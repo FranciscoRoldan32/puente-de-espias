@@ -9,15 +9,12 @@ public class Coordinates {
     private double longitude;
 
 
-    public Coordinates(String name, double latitude, double longitude) {
-        this.name = name;
+    public Coordinates(double latitude, double longitude) {
+        
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    public String getName() {
-        return name;
-    }
 
     public double getLatitude() {
         return latitude;
